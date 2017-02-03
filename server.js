@@ -38,10 +38,10 @@ app.get('/todos/:id', function (request,response) {
 app.post('/todos', function (request,response) {
 	var body = _.pick(request.body, 'desc', 'completed');
 
-	//if(!_.isBoolean(body.completed) || !_.isString(body.desc) || body.desc.trim().length === 0) {
+	if(!_.isBoolean(body.completed) || !_.isString(body.desc) || body.desc.trim().length === 0) {
 
-		//return response.status(404).send();
-	//}
+		return response.status(404).send();
+	}
 	body.desc = body.desc.trim();
 
 	body.id = todoNextId++;
