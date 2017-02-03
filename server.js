@@ -9,21 +9,6 @@ var todoNextId = 1;
 
 app.use(bodyParser.json());
 
-app.post('/todos', function (request,response) {
-	var body = request.body;
-
-	if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim() === 0) {
-
-		return response.status(400).send();
-	}
-
-	body.id = todoNextId++;
-	todos.push(body); 
-	console.log(body);
-	response.json(body);
-
-});
-
 app.get('/', function (request,response) {
 	response.send('Todo API SETUP: ROOT FOLDER');
 });
@@ -46,6 +31,36 @@ app.get('/todos/:id', function (request,response) {
 		response.status(404).send();
 	}
 
+});
+
+//POST/todos
+
+app.post('/todos', function (request,response) {
+	var body = _.pick(request.body, 'desc', 'completed');
+
+	//if(!_.isBoolean(body.completed) || !_.isString(body.desc) || body.desc.trim().length === 0) {
+
+		//return response.status(404).send();
+	//}
+	body.desc = body.desc.trim();
+
+	body.id = todoNextId++;
+	todos.push(body); 
+	console.log(body);
+	response.json(body);
+
+});
+
+//DELETE/todos
+app.delete('/todos/:id',function (request,response){
+	var todoID = parseInt(request.params.id,10);
+	var matchID = _.findWhere(todos,{id: todoID});
+	if(!matchID) {
+		response.status(404).json({"error":"No Todoitem matched"});
+	} else {
+		todos = _.without(todos, matchID);
+		response.json(matchID);
+	}
 });
 
 app.listen(PORT, function() {
